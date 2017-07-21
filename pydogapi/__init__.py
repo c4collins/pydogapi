@@ -1,10 +1,17 @@
-from urllib import request as urlrequest, parse as urlparse
+
+from __future__ import absolute_import, division, print_function, unicode_literals # For Python 2
+import sys
+if sys.version_info >= (3, 0):
+    # For Python 3
+    from urllib import request as urlrequest, parse as urlparse
+else:
+    # For Python 2
+    import urllib as urlrequest
+    import urlparse
 import json
 
 
 class DogAPI(object):
-    base_domain = "https://dog.ceo/"
-    api_route = "/api/"
 
     def list(self):
         return self._api_request("breeds/list")
@@ -23,14 +30,10 @@ class DogAPI(object):
         else:
             return self._api_request("breed/{}/{}/images/random".format(breed, subbreed))
 
-    def _build_url(self, endpoint=""):
-        api = urlparse.urljoin(self.base_domain, self.api_route)
-        return urlparse.urljoin(api, endpoint)
-
     def _api_request(self, endpoint):
         # print(self._build_url(endpoint)) # Useful for debugging, but not enough to implement a logger
         return json.loads(urlrequest.urlopen(
-            self._build_url(endpoint)
+            urlparse.urljoin("https://dog.ceo/api/", endpoint)
         ).read().decode("utf-8"))
 
 if __name__ == "__main__":
